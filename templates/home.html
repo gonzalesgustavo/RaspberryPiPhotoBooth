@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Photobooth</title>
+</head>
+<body>
+	<video id="video"></video>
+	<canvas id="canvas"></canvas>
+	<form method="POST" action="/memify">
+		<input type="text" name="memetext" placeholder="Enter your meme text">
+		<input type="submit" value="submit" id="submit">
+	</form>
+	
+	<script
+  	src="https://code.jquery.com/jquery-3.3.1.min.js"
+  	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  	crossorigin="anonymous"></script>
+	<script type="text/javascript">
+		const video = document.getElementById('video');
+		const canvas = document.getElementById('canvas');
+		let context = canvas.getContext('2d');
+
+		navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.oGetUserMedia || ms.getUserMedia;
+
+		if(navigator.getUserMedia){
+			navigator.getUserMedia({video:true}, streamWebCam, throwError);
+		}
+
+		function streamWebCam ( stream ) {
+			video.src = window.URL.createObjectURL(stream);
+			video.play();
+		} //end of function streamWebCam
+
+		function throwError ( e ) {
+			alert(e.name);
+		} //end of function throwError
+
+		$('submit').on('click', (err, data)=>{
+			setTimeout(()=>{
+				$.get("/memify", (data)=>{
+				console.log(data);
+			}, 1000);
+			})
+		});
+	</script>
+</body>
+</html>
