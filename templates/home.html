@@ -3,45 +3,69 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Photobooth</title>
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 </head>
 <body>
-	<video id="video"></video>
-	<canvas id="canvas"></canvas>
-	<form method="POST" action="/memify">
-		<input type="text" name="memetext" placeholder="Enter your meme text">
-		<input type="submit" value="submit" id="submit">
-	</form>
+	<div class="container">
+		<center><h2>PhotoBooth Memer</h2></center>
+		<div class="row">
+			
+			<div class="col-md-3">
+				<br>
+				<br>
+				<label for="effects" class="label"><strong>Effects</strong></label><br>
+				<input type="text" class="form-control" id="effects">
+				<br>
+				<h4>Available Effects</h4>
+				<p>colorswap</p>
+				<p>emboss</p>
+				<p>gpen</p>
+				<p>hatch</p>
+				<p>watercolor</p>
+				<p>negative</p>
+			</div>
+			<div class="col-md-6">
+				<br>
+				<br>
+				<hr>
+				<h3>Welcome To the Memifier 1.0</h3>
+				<center><button id="snapshot"><img src="{{ url_for('static', filename='cami.jpg') }}" width="200px" height="200px" alt=""></button></center>
+				<p>Please select an effect on the panel to the left and add the text <br> you wish to add on the right, then input your email <br> into the box below. When Done click the camera.</p>
+				<input type="text" class="form-control" id="email" placeholder="EMAIL">
+			</div>
+			<div class="col-md-3">
+				<br>
+				<br>
+				<br>
+				<br>
+				<h5>Meme Text</h5>
+				<input type="text" class="form-control" placeholder="meme text input" id="memtext">
+			</div>
+		</div>
+	</div>
 	
 	<script
   	src="https://code.jquery.com/jquery-3.3.1.min.js"
   	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   	crossorigin="anonymous"></script>
 	<script type="text/javascript">
-		const video = document.getElementById('video');
-		const canvas = document.getElementById('canvas');
-		let context = canvas.getContext('2d');
-
-		navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.oGetUserMedia || ms.getUserMedia;
-
-		if(navigator.getUserMedia){
-			navigator.getUserMedia({video:true}, streamWebCam, throwError);
-		}
-
-		function streamWebCam ( stream ) {
-			video.src = window.URL.createObjectURL(stream);
-			video.play();
-		} //end of function streamWebCam
-
-		function throwError ( e ) {
-			alert(e.name);
-		} //end of function throwError
-
-		$('submit').on('click', (err, data)=>{
-			setTimeout(()=>{
-				$.get("/memify", (data)=>{
-				console.log(data);
-			}, 1000);
-			})
+		let snapshot= $('#snapshot');
+		let emailField = $('#email');
+		
+		snapshot.on('click', ()=>{
+			if(emailField.val() !== '') {
+				let effect = $('#effects').val();
+				let memtext = $('#memtext').val();
+				$.post('/memify', {
+					em: emailField.val(),
+					effect,
+					memtext
+				}, (err)=>{
+					if(err) alert(err);
+				});
+			} else {
+				alert("Please add your email")
+			}
 		});
 	</script>
 </body>
