@@ -5,17 +5,21 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 from os import path
+from picamera import PiCamera, Color
+from time import sleep
 
 config = {
-    'senderemail': '',
-    'password': '',
+    'senderemail': 'sender gmail',
+    'password': 'sender password',
     'subject': 'Memify Image',
     'body': 'Thanks for using the Memer Photobooth'
 }
 
+image_path = path.join(path.dirname(path.abspath(__file__)), 'images/image.jpg')
+
+
 app = Flask(__name__)
 
-APP_ROOT = path.dirname(path.abspath(__file__))
 
 
 def email_photo(user_email, filename):
@@ -43,6 +47,23 @@ def email_photo(user_email, filename):
         print("failed to send")
 
 
+def snap_image(text, effect):
+    global image_path
+    camera = PiCamera()
+    camera.start_preview()
+    sleep(5)
+    if len(text) < 0:
+        camera.annotate_background = Color('blue')
+        camera.annotate_foreground = Color('red')
+        camera.annotate_text_size = 50
+        camera.annotate_text = text
+    if len(effect) < 0:
+        camera.image_effect = effect
+    sleep(2)
+    camera.capture(image_path)
+    sleep(10)
+    camera.stop_preview()
+
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -50,11 +71,12 @@ def home():
 
 @app.route('/memify', methods=['GET', 'POST'])
 def memes():
+    global image_path
     if request.method == 'POST':
         email = request.form['em']
         effect = request.form['effect']
         meme_text = request.form['memtext']
-        image_path = path.join(APP_ROOT, 'images/bun.jpg')
+        snap_image(meme_text, effect)
         email_photo('gcgonzales.edu@gmail.com', image_path)
         return render_template('home.html')
     return {'status': 'success'}
@@ -62,5 +84,3 @@ def memes():
 if __name__ == '__main__':
     app.run(debug=True)
 
-# git remote photobooth
-# debug mode FLASK_APP=app.py FLASK_DEBUG=1 python -m flask run
