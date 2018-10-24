@@ -7,8 +7,8 @@ from email import encoders
 from os import path
 
 config = {
-    'senderemail': 'gcodingconnected@gmail.com',
-    'password': 'fluttershy123.',
+    'senderemail': '',
+    'password': '',
     'subject': 'Memify Image',
     'body': 'Thanks for using the Memer Photobooth'
 }
